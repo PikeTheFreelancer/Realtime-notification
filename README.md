@@ -1,64 +1,50 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Các chức năng đã làm được:
+1. Tạo 1 form gồm các trường: To, title và Content
+2. Khi nhấn submit thì 1 tài khoản khác được nhập trong trường 'To' sẽ nhận được thông báo là nội dung của trường 'Content' ngay lập tức
+3. Hiển thị nhãn thông báo khi tài khoản nhận được thông báo.
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Các bước thực hiện:
+1. Khởi tạo project:
+- composer create-project --prefer-dist laravel/laravel NotificationRealTime
+2. Chỉnh sửa file .env để kết nối database
+3. Tạo bảng notification để lưu thông báo:
+- php artisan notifications:table
+- php artisan migrate
+4. tạo file TestNotification:
+- php artisan make:notification TestNotification
+5. function via($notifiable) để định nghĩa phương thức thông báo. Có các phương thức như: mail, database, broadcast, vonage, và slack. Ở đây mình dùng database tức là chỉ lưu data của thông báo vào db.
+6. Sử dụng function toArray để event trả ra một data lưu vào bảng notifications. (hoặc toDatabase() )
+7. Make Auth - login, register, logout:
+- composer require laravel/ui
+- php artisan ui vue --auth
+- php artisan migrate
+8. Tạo form nhập dữ liệu cho thông báo gửi đi: notificaton.blade.php sau đó include vào home.blade.php
+9. Tạo controller cho việc gửi notification:
+- php artisan make:controller SendNotification
+10. Thêm route trong file routes\web.php
+11. Thêm tab notification vào layouts app.blade.php
+12. Sử dụng Pusher để thông báo real-time:
+- composer require pusher/pusher-php-server
+13. Đăng kí tài khoản và tạo app trên pusher.com -> chon BE tech = PHP
+14. sửa file .env:
+- BROADCAST_DRIVER=pusher
 
-## About Laravel
+- PUSHER_APP_ID=xxxxx
+- PUSHER_APP_KEY=xxxxxxxxxxxxxxxxxxxxx
+- PUSHER_APP_SECRET=xxxxxxxxxxxxxxxxxxxxx
+- PUSHER_APP_CLUSTER=ap1
+- Thay lần lượt các cái trên bằng các key tương ứng khi tạo xong app trên pusher.com
+15. Vào config/app.php Loại bỏ comment ở BroadcastServiceProvider
+- App\Providers\BroadcastServiceProvider::class
+16. Tạo event gửi notification bằng câu lệnh:
+- php artisan make:event NotificationEvent
+- trong hàm broadcastOn(), ta truyền đối số $chanel vào PrivateChannel($chanel). $chanel là id của người nhận. Ý tưởng là chỉ gửi thông báo cho riêng người dùng đó chứ không gửi đồng loạt cho tất cả.
+17. Trong controller ta use Pusher, đồng thời truyền param vào hàm trigger như sau:
+- $pusher->trigger('NotificationEvent', $request['noti_to'], $data);
+- Biến $request['noti_to'] chính là đích đến của thông báo (hay nói cách khác là id của người dùng sẽ nhận được thông báo).
+18. Thêm script vào app.blade.php để bắt sự kiện nhận thông báo. tham khảo tại: https://pusher.com/docs/channels/using_channels/events/
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Tài liệu tham khảo:
+- https://viblo.asia/p/luu-va-gui-notification-real-time-trong-laravel-OeVKB3x0ZkW
+- https://pusher.com/docs/channels/using_channels/events/
+- https://laravel.com/docs/8.x/notifications
