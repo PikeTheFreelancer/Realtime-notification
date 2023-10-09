@@ -20,6 +20,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
 </head>
+
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -76,6 +77,15 @@
                                 </a>
                                 
                                 <div class="dropdown-menu dropdown-menu-right menu-notification" aria-labelledby="navbarDropdown">
+                                    @foreach ($notifications as $notification)
+                                        @php
+                                            $data = json_decode($notification->data);
+                                        @endphp
+                                        <a class="dropdown-item" href="#">
+                                            <span>{{ $data->noti_from }}</span><br>
+                                            <small>{{ $data->content }}</small>
+                                        </a>
+                                    @endforeach
                                 </div>
                             </li>
                         @endguest
@@ -97,19 +107,22 @@
             encrypted: true,
             cluster: "ap1"
         });
-        var recipant = {{ Auth::user()->id }};
-        var channel = pusher.subscribe('NotificationEvent');
-        channel.bind(recipant, function(data) {
-            var newNotificationHtml = `
-            <a class="dropdown-item" href="#">
-                <span>${data.noti_from}</span><br>
-                <small>${data.content}</small>
-            </a>
-            `;
-            var newNotilabel = "<span class='new-notification'>!</span>";
-            $('.menu-notification').prepend(newNotificationHtml);
-            $('.notification-box').prepend(newNotilabel);
-        });
+        @if (Auth::check()) 
+
+            var recipant = {{ Auth::user()->id }};
+            var channel = pusher.subscribe('NotificationEvent');
+            channel.bind(recipant, function(data) {
+                var newNotificationHtml = `
+                <a class="dropdown-item" href="#">
+                    <span>${data.noti_from}</span><br>
+                    <small>${data.content}</small>
+                </a>
+                `;
+                var newNotilabel = "<span class='new-notification'>!</span>";
+                $('.menu-notification').prepend(newNotificationHtml);
+                $('.notification-box').prepend(newNotilabel);
+            });
+        @endif
     </script>
 </body>
 </html>
