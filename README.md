@@ -2,7 +2,7 @@
 1. Tạo 1 form gồm các trường: To, title và Content
 2. Khi nhấn submit thì 1 tài khoản khác được nhập trong trường 'To' sẽ nhận được thông báo là nội dung của trường 'Content' ngay lập tức
 3. Hiển thị nhãn thông báo khi tài khoản nhận được thông báo.
-
+4. Click chuột để  đánh dấu là đã đọc thông báo
 ## Các bước thực hiện:
 1. Khởi tạo project:
 - composer create-project --prefer-dist laravel/laravel NotificationRealTime
