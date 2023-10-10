@@ -18,3 +18,26 @@
     line-height: 10px;
     font-weight: bold;
 }
+.hidden{
+    display: none;
+}
+.noti-item{
+    position: relative;
+}
+.noti-item:not(:first-child){
+    border-top: solid 1px #ddd;
+}
+.noti-item:hover{
+    background-color: #ddd;
+}
+.noti-unread::after{
+    content: '';
+    width: 5px;
+    height: 5px;
+    background-color: #0167cb;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+}

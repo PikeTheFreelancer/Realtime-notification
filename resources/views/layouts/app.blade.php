@@ -81,7 +81,7 @@
                                         @php
                                             $data = json_decode($notification->data);
                                         @endphp
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item noti-item @if(!$notification->read_at) noti-unread @endif" data-id={{$notification->id}} href="#">
                                             <span>{{ $data->noti_from }}</span><br>
                                             <small>{{ $data->content }}</small>
                                         </a>
@@ -103,17 +103,16 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
-        var pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+        var pusher = new Pusher('{{ Config::get('broadcasting.connections.pusher.key') }}', {
             encrypted: true,
             cluster: "ap1"
         });
         @if (Auth::check()) 
-
             var recipant = {{ Auth::user()->id }};
             var channel = pusher.subscribe('NotificationEvent');
             channel.bind(recipant, function(data) {
                 var newNotificationHtml = `
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item noti-item noti-unread" href="#" data-id=${data.id}>
                     <span>${data.noti_from}</span><br>
                     <small>${data.content}</small>
                 </a>
@@ -123,6 +122,34 @@
                 $('.notification-box').prepend(newNotilabel);
             });
         @endif
+        $(document).on('click', '.notification-box', function() {
+            $('.new-notification').addClass('hidden');
+        })
+        $(document).on('click', '.noti-item', function(e) {
+            e.preventDefault();
+            var noti_id = $(this).data('id');
+            console.log(noti_id);
+            var this_noti = $(this);
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: 'notification/mark-as-read',
+                method: 'POST',
+                data: { noti_id: noti_id }, // Send the ID as data
+                success: function(response) {
+                    // Handle the success response from the controller
+                    console.log('Marked as read:', response);
+                    this_noti.removeClass('noti-unread');
+                },
+                error: function(error) {
+                    // Handle any errors that occur during the Ajax request
+                    console.error('Error:', error);
+                }
+            });
+        })
     </script>
 </body>
 </html>

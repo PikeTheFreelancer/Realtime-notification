@@ -43,7 +43,7 @@
 - $pusher->trigger('NotificationEvent', $request['noti_to'], $data);
 - Biến $request['noti_to'] chính là đích đến của thông báo (hay nói cách khác là id của người dùng sẽ nhận được thông báo).
 18. Thêm script vào app.blade.php để bắt sự kiện nhận thông báo. tham khảo tại: https://pusher.com/docs/channels/using_channels/events/
-
+19. Chú ý: không gọi hàm env() ở bất cứ đâu ngoài các files config. Muốn gọi các hằng của env thì phải dùng Config::get() (tham khảo trong controller)
 ## Tài liệu tham khảo:
 - https://viblo.asia/p/luu-va-gui-notification-real-time-trong-laravel-OeVKB3x0ZkW
 - https://pusher.com/docs/channels/using_channels/events/

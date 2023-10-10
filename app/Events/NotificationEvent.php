@@ -36,4 +36,10 @@ class NotificationEvent
     {
         return new PrivateChannel($chanel);
     }
+    
+    public function broadcastWith() {
+        return [
+            "foo" => "bar"
+        ];
+    }
 }

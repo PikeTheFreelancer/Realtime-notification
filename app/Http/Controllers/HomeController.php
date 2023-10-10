@@ -28,7 +28,7 @@ class HomeController extends Controller
     public function index()
     {
         $user_id = Auth::user()->id;
-        $notifications = DB::table('notifications')->where('data->noti_to', $user_id)->get();
+        $notifications = DB::table('notifications')->where('data->noti_to', $user_id)->orderBy('created_at', 'desc')->limit(10)->get();
         return view('home',['notifications' => $notifications]);
     }
 }
